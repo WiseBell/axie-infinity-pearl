@@ -1,6 +1,9 @@
 <template>
-  <el-container direction="vertical">
+  <el-container class="app__container" direction="vertical">
     <el-row :gutter="12">
+      <dashboard />
+    </el-row>
+    <el-row class="mt-24" :gutter="12">
       <el-col :span="12">
         <el-table
           border
@@ -39,9 +42,13 @@
 
 <script>
 import { Decimal } from 'decimal.js-light';
+import Dashboard from './components/Dashboard.vue';
 
 export default {
   name: 'App',
+  components: {
+    Dashboard,
+  },
   data: () => ({
     scholarsList: [
       {
@@ -73,3 +80,12 @@ export default {
   }
 }
 </script>
+<style lang="scss" scoped>
+.app__container {
+  padding: 24px;
+  box-sizing: border-box;
+  .mt-24 {
+    margin-top: 24px;
+  }
+}
+</style>

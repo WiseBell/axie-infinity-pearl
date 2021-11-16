@@ -12,6 +12,8 @@
     "decimal.js-light": "^2.5.1",
     "element-theme-dark": "^1.0.3",
     "element-ui": "^2.15.6",
+    "node-sass": "^6.0.1",
+    "sass-loader": "10",
     "vue": "^2.6.11"
   },
   "devDependencies": {
