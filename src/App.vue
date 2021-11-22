@@ -27,6 +27,21 @@ export default {
     Dashboard,
     ScholarTable,
   },
+  data: () => ({
+    slpEarnings: []
+  }),
+  mounted() {
+    fetch('/schoalrs/get-daily')
+      .then((response) => {
+        console.log('response: ', response.json());
+      })
+      .then((data) => {
+        console.log(data);
+      })
+      .catch((error) => {
+        console.error('error: ', error)
+      })
+  },
 }
 </script>
 <style lang="scss" scoped>
