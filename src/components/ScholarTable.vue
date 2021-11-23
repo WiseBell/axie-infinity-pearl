@@ -1,106 +1,126 @@
 <template>
   <el-container direction="vertical">
-    <el-table
-      border
-      :data="scholarsList"
-    >
-      <el-table-column
-        type="expand"
-        label="이번 달 일일 SLP 내역"
-        width="150"
+    <el-row>
+      <el-table
+        border
+        :data="getCurrentPageItems"
       >
-        <template slot-scope="props">
-          <p v-for="(x, i) in props.row.slpList" :key="i">
-            Day: {{ x.day }} / SLP: {{ x.slp }}
-          </p>
-        </template>
-      </el-table-column>
-      <el-table-column
-        header-align="center"
-        align="center"
-        label="장학생"
-        prop="name"
+        <el-table-column
+          header-align="center"
+          align="center"
+          label="Scholar"
+        >
+          <template slot-scope="scope">
+            {{ `[${scope.row.id}]` }} {{ scope.row.discord}}
+          </template>
+        </el-table-column>
+        <el-table-column
+          header-align="center"
+          align="center"
+          label="Claimable SLP"
+          width="200"
+        >
+          <template slot-scope="scope">
+            {{ getClaimableSLPStr(scope.row.claimable) }}
+          </template>
+        </el-table-column>
+        <el-table-column
+          header-align="center"
+          align="center"
+          label="Visual"
+          width="100"
+        >
+          <template slot-scope="scope">
+            <el-button
+              type="success"
+              icon="el-icon-arrow-right"
+              circle
+              :loading="loading"
+              @click.stop="onClickDrawChart(scope.row)"
+            >
+            </el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </el-row>
+    <el-row class="mt-12" type="flex" justify="center">
+      <el-pagination
+        v-if="response.table.length"
+        background
+        layout="prev, pager, next, jumper"
+        :current-page="getCurrentPage"
+        :page-size="options.table.size"
+        :total="response.table.length"
+        @current-change="onChangePagination"
       />
-      <el-table-column
-        header-align="center"
-        align="center"
-        label="이번 달 누적 SLP"
-        width="150"
-      >
-        <template slot-scope="scope">
-          {{ getSumOfCurrentMonthSlp(scope.row.slpList) }}
-        </template>
-      </el-table-column>
-    </el-table>
+    </el-row>
   </el-container>
 </template>
 <script>
-import { Decimal } from 'decimal.js-light';
-
 export default {
   name: 'ScholarTable',
+  props: {
+    list: Array,
+    loading: Boolean
+  },
   data: () => ({
-    scholarsList: [
-      {
-        name: 'scholar 01',
-        slpList: [
-          {
-            day: 1,
-            slp: 1220,
-          },
-          {
-            day: 2,
-            slp: 115,
-          },
-          {
-            dat: 31,
-            slp: 147
-          }
-        ]
-      },
-      {
-        name: 'scholar 02',
-        slpList: [
-          {
-            day: 1,
-            slp: 1620,
-          },
-          {
-            day: 2,
-            slp: 1135,
-          },
-          {
-            dat: 31,
-            slp: 1427
-          }
-        ]
-      },
-      {
-        name: 'scholar 03',
-        slpList: [
-          {
-            day: 1,
-            slp: 120,
-          },
-          {
-            day: 2,
-            slp: 165,
-          },
-          {
-            dat: 31,
-            slp: 157
-          }
-        ]
+    response: {
+      table: []
+    },
+    options: {
+      table: {
+        page: 0,
+        size: 10,
+        totalElements: 0,
       }
-    ]
+    }
   }),
+  computed: {
+    getCurrentPageItems() {
+      return this.response.table.slice(
+        (this.options.table.page * this.options.table.size),
+        (this.options.table.page * this.options.table.size) + this.options.table.size,
+      );
+    },
+    getCurrentPage() {
+      return this.options.table.page + 1;
+    },
+  },
+  watch: {
+    list(newVal) {
+      this.response.table = newVal;
+    }
+  },
   methods: {
-    getSumOfCurrentMonthSlp(list = []) {
-      return list
-        .map(x => new Decimal(x.slp).toNumber())
-        .reduce((a, b) => a + b)
-        .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    getClaimableSLPStr(payload) {
+      if (!payload) {
+        return ''
+      }
+      return payload.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    },
+    // getSumOfLast30Days(payload) {
+    //   const sum = obj => Object.values(obj)
+    //     .reduce((a, b) => a + b)
+    //     .toString().replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    //   return sum(payload);
+    // },
+    onChangePagination(value) {
+      this.options.table.page = (value - 1);
+    },
+    onClickDrawChart({ id, discord, performances }) {
+      console.log(id, discord, performances);
+      this.$emit('update-chart', {
+        id,
+        discord,
+        performances
+      });
     }
   }
 }
 </script>
+<style lang="scss" scoped>
+.mt-12 {
+  margin-top: 12px;
+}
+</style>
