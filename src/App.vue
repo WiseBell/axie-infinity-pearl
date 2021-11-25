@@ -59,7 +59,7 @@ export default {
     }
   },
   mounted() {
-    fetch('http://13.125.245.81:5000/scholars/get-daily')
+    fetch('http://13.209.43.228:5000/scholars/get-daily')
       .then(response => response.json())
       .then((data) => {
         this.scholarData = data?.data;
